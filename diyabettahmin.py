@@ -30,6 +30,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.cluster import AgglomerativeClustering
+from sklearn.svm import SVC
+from sklearn.naive_bayes import GaussianNB
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -510,6 +512,55 @@ train_log_loss = log_loss(y_train, y_train_proba)
 start_test_time = time.time()
 y_test_pred = ad.predict(x_test_scaler)
 y_test_proba = ad.predict_proba(x_test_scaler)[:, 1]
+end_test_time = time.time()
+total_test_time = end_test_time - start_test_time
+
+test_accuracy = accuracy_score(y_test, y_test_pred)
+test_precision = precision_score(y_test, y_test_pred)
+test_recall = recall_score(y_test, y_test_pred)
+test_f1 = f1_score(y_test, y_test_pred)
+test_confusion = confusion_matrix(y_test, y_test_pred)
+test_roc_auc = roc_auc_score(y_test, y_test_proba)
+test_log_loss = log_loss(y_test, y_test_proba)
+
+
+print(f"Train Time : {total_train_time}")
+print(f"Train Accuracy Score: {train_accuracy}")
+print(f"Train Precision Score: {train_precision}")
+print(f"Train Recall Score : {train_recall}")
+print(f"Train F1 Score : {train_f1}")
+print(f"Train Confusion Matrix : {train_confusion}")
+print(f"Train Log Loss : {train_log_loss}")
+print(f"Train ROC AUC Score : {train_roc_auc}")
+print("---------------------------------------------------------")
+print(f"Test Time : {total_test_time}")
+print(f"Test Accuracy Score: {test_accuracy}")
+print(f"Test Precision Score: {test_precision}")
+print(f"Test Recall Score: {test_recall}")
+print(f"Test F1 Score: {test_f1}")
+print(f"Test Confusion Matrix: {test_confusion}")
+print(f"Test Log Loss : {test_log_loss}")
+print(f"Test ROC AUC Score: {test_roc_auc}")
+
+start_train_time = time.time()
+gn = GaussianNB()
+model = gn.fit(x_train_scaler, y_train)                                             #GaussianNB 8
+end_train_time = time.time()
+total_train_time = end_train_time - start_train_time
+
+y_train_pred = gn.predict(x_train_scaler)
+y_train_proba = gn.predict_proba(x_train_scaler)[:, 1]
+train_accuracy = accuracy_score(y_train, y_train_pred)
+train_precision = precision_score(y_train, y_train_pred)
+train_recall = recall_score(y_train, y_train_pred)
+train_f1 = f1_score(y_train, y_train_pred)
+train_confusion = confusion_matrix(y_train, y_train_pred)
+train_roc_auc = roc_auc_score(y_train, y_train_proba)
+train_log_loss = log_loss(y_train, y_train_proba)
+
+start_test_time = time.time()
+y_test_pred = gn.predict(x_test_scaler)
+y_test_proba = gn.predict_proba(x_test_scaler)[:, 1]
 end_test_time = time.time()
 total_test_time = end_test_time - start_test_time
 
