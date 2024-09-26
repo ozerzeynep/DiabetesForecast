@@ -32,6 +32,7 @@ from sklearn.metrics import silhouette_score
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import BaggingClassifier
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -544,7 +545,7 @@ print(f"Test ROC AUC Score: {test_roc_auc}")
 
 start_train_time = time.time()
 gn = GaussianNB()
-model = gn.fit(x_train_scaler, y_train)                                             #GaussianNB 8
+model = gn.fit(x_train_scaler, y_train)                                             #GaussianNB 9
 end_train_time = time.time()
 total_train_time = end_train_time - start_train_time
 
@@ -590,6 +591,56 @@ print(f"Test F1 Score: {test_f1}")
 print(f"Test Confusion Matrix: {test_confusion}")
 print(f"Test Log Loss : {test_log_loss}")
 print(f"Test ROC AUC Score: {test_roc_auc}")
+
+start_bagging_train_time = time.time()
+bagging = BaggingClassifier(estimator=RandomForestClassifier(n_estimators=100, random_state=42),
+                            n_estimators=10, random_state=42)                                     #BaggingClassifier 10
+bagging_model = bagging.fit(x_train_scaler, y_train)
+end_bagging_train_time = time.time()
+total_bagging_train_time = end_bagging_train_time - start_bagging_train_time
+
+y_bagging_train_pred = bagging.predict(x_train_scaler)
+y_bagging_train_proba = bagging.predict_proba(x_train_scaler)[:, 1]
+
+train_bagging_accuracy = accuracy_score(y_train, y_bagging_train_pred)
+train_bagging_precision = precision_score(y_train, y_bagging_train_pred)
+train_bagging_recall = recall_score(y_train, y_bagging_train_pred)
+train_bagging_f1 = f1_score(y_train, y_bagging_train_pred)
+train_bagging_confusion = confusion_matrix(y_train, y_bagging_train_pred)
+train_bagging_roc_auc = roc_auc_score(y_train, y_bagging_train_proba)
+train_bagging_log_loss = log_loss(y_train, y_bagging_train_proba)
+
+start_bagging_test_time = time.time()
+y_bagging_test_pred = bagging.predict(x_test_scaler)
+y_bagging_test_proba = bagging.predict_proba(x_test_scaler)[:, 1]
+end_bagging_test_time = time.time()
+total_bagging_test_time = end_bagging_test_time - start_bagging_test_time
+
+test_bagging_accuracy = accuracy_score(y_test, y_bagging_test_pred)
+test_bagging_precision = precision_score(y_test, y_bagging_test_pred)
+test_bagging_recall = recall_score(y_test, y_bagging_test_pred)
+test_bagging_f1 = f1_score(y_test, y_bagging_test_pred)
+test_bagging_confusion = confusion_matrix(y_test, y_bagging_test_pred)
+test_bagging_roc_auc = roc_auc_score(y_test, y_bagging_test_proba)
+test_bagging_log_loss = log_loss(y_test, y_bagging_test_proba)
+
+print(f"Bagging Train Time: {total_bagging_train_time}")
+print(f"Bagging Train Accuracy: {train_bagging_accuracy}")
+print(f"Bagging Train Precision: {train_bagging_precision}")
+print(f"Bagging Train Recall: {train_bagging_recall}")
+print(f"Bagging Train F1: {train_bagging_f1}")
+print(f"Bagging Train Confusion Matrix: \n{train_bagging_confusion}")
+print(f"Bagging Train ROC AUC: {train_bagging_roc_auc}")
+print(f"Bagging Train Log Loss: {train_bagging_log_loss}")
+print("---------------------------------------------------------")
+print(f"Bagging Test Time: {total_bagging_test_time}")
+print(f"Bagging Test Accuracy: {test_bagging_accuracy}")
+print(f"Bagging Test Precision: {test_bagging_precision}")
+print(f"Bagging Test Recall: {test_bagging_recall}")
+print(f"Bagging Test F1: {test_bagging_f1}")
+print(f"Bagging Test Confusion Matrix: \n{test_bagging_confusion}")
+print(f"Bagging Test ROC AUC: {test_bagging_roc_auc}")
+print(f"Bagging Test Log Loss: {test_bagging_log_loss}")
 
 """# ***XGBClassifier MODEL OPTİMİZASYONU***"""
 
