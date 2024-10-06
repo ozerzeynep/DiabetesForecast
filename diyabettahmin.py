@@ -46,7 +46,7 @@ df.head(3)
 
 df.tail(3)
 
-"""# ***KEŞİFSEL VERİ ANALİZİNİN YAPILMASI***"""
+"""# ***KEŞİFSEL VERİ ANALİZİNİN YAPILMASI (Exploratory Data Analysis - EDA)***"""
 
 df.info()
 
@@ -56,11 +56,31 @@ df.columns
 
 df.describe().T
 
-df.isnull().any()
+df.isnull().sum()
 
 df.duplicated().sum()
 
 df.Outcome.value_counts()*100/len(df)
+
+plt.figure(figsize=(17,6))
+sns.countplot(x= "Outcome", data = df, color= 'red')
+plt.show()
+
+pd.crosstab(df['Outcome'], df['Age'], margins=True)
+
+"""# ***AYKIRI DEĞER İNCELEMESİ(Anomali Tespiti)***"""
+
+plt.figure(figsize=(17,6))
+sns.boxplot(data = df)                    #herhangi bir kütüphane kullanmadan
+plt.title("Aykırı Değer Gösterimi")
+plt.show()
+
+q1 = df.quantile(0.25)
+q2 = df.quantile(0.75)
+q3 = q2 - q1
+
+cıktı = df[((df < (q1 - 1.5 * q3)) | (df > (q2 + 1.5 * q3))).any(axis=1)]
+print(cıktı)
 
 """# ***VERİLERİN GÖRSELLEŞTİRİLMESİ***"""
 
